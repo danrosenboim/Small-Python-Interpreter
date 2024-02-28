@@ -1,14 +1,14 @@
 #pragma once
-#include "Type.h"
+#include "Sequence.hpp"
+#include <sstream>
 
-class Boolean : public Type
+class List : public Sequence<Type*>
 {
 public:
-	Boolean(bool value, bool isTemp);
+	List(const std::vector<Type*> types, bool isTemp);
+	virtual ~List() override;
 
 	virtual bool isPrintable() const override;
 	virtual std::string toString() const override;
 	virtual std::string getType() const override;	
-private:
-	bool _value;
 };

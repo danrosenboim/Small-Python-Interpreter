@@ -12,3 +12,8 @@ std::string Void::toString() const
 {
 	return "";
 }
+
+std::string Void::getType() const
+{
+	return "void";
+}

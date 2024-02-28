@@ -32,7 +32,66 @@ Type* Parser::parseString(std::string s)
 	{
 		return (Type*)(new Void(true));
 	}
+
+	if(s.find("type(") == 0 && s[s.size() - 1] == ')')
+	{
+		std::string arg = s.substr(5, s.size() - 6);
+		type = getVariableValue(arg);
+		if(!type)
+		{
+			type = getType(arg);
+			if(!type)
+			{
+				throw NameErrorException(arg);
+			}
+		}
+		std::cout << "<type '" << type->getType() << "'>" << std::endl;
+		return new Void(true);
+	}
+
+	if(s.find("del ") == 0)
+	{
+		std::string arg = s.substr(4);
+		type = getVariableValue(arg);
+		if(!type)
+		{
+			throw NameErrorException(arg);
+		}
+		delete type;
+		_variables.erase(arg);
+		return new Void(true);
+	}
 	
+	if(s.find("len(") == 0 && s[s.size() - 1] == ')')
+	{
+		std::string arg = s.substr(4, s.size() - 5);
+		type = getVariableValue(arg);
+		if(!type)
+		{
+			type = getType(arg);
+			if(!type)
+			{
+				throw NameErrorException(arg);
+			}
+		}
+		if(type->getType() == "list")
+		{
+			return new Integer(((Sequence<Type*>*)type)->getLength(), true);
+		}
+		else if(type->getType() == "str")
+		{
+			return new Integer(((Sequence<char>*)type)->getLength(), true);
+		}
+		else
+		{
+			throw TypeErrorException(type->getType());
+		}
+	}
+	else if(s.find("len") == 0)
+	{
+		std::cout << "<build-in function len>" << std::endl;
+		return new Void(true);
+	}
 	throw NameErrorException(s);
 }
 
@@ -53,6 +112,54 @@ Type* Parser::getType(std::string s)
 		s = s.substr(1, s.size() - 2);
 		std::vector<char> cArr(s.begin(), s.end());
 		return new String(cArr, true);
+	}
+	else if(s.size() > 1 && s[0] == '[' && s[s.size() - 1] == ']')
+	{
+		std::vector<Type*> types;
+		std::vector<int> typeLocations;
+		
+		typeLocations.push_back(0);
+
+		bool inString = false;
+		for(size_t i = 0; i < s.size(); i++)
+		{
+			if(s[i] == '\'' || s[i] == '"')
+			{
+				inString = !inString;
+				continue;
+			}
+			if(inString)
+			{
+				continue;
+			}
+			if(s[i] == ',')
+			{
+				typeLocations.push_back(i);
+			}
+		}
+		typeLocations.push_back(s.size() - 1);
+		for(size_t i = 1; i < typeLocations.size(); i++)
+		{
+			Type* curType = nullptr;
+			std::string typeString = s.substr(typeLocations[i - 1] + 1, typeLocations[i] - (typeLocations[i - 1] + 1));
+			if(typeString != "")
+			{
+				TypeUtils::remWhitespaceStart(typeString);
+				TypeUtils::remWhitespaceEnd(typeString);
+				curType = getType(typeString);
+			}
+			if(!curType)
+			{
+				for(size_t i = 0; i < types.size(); i++)
+				{
+					delete types[i];
+				}
+				types.clear();
+				return nullptr;
+			}
+			types.push_back(curType);
+		}
+		return new List(types, true);
 	}
 	return nullptr;
 }
@@ -110,7 +217,15 @@ bool Parser::makeAssignment(const std::string& s)
 		{
 			throw SyntaxException();
 		}
-		type = getType(result->second->toString());
+		std::string checkList = result->second->toString();
+		if(checkList.size() >= 1 && checkList[0] == '[')
+		{
+			type = result->second;
+		}
+		else
+		{
+			type = getType(checkList);
+		}
 	}
 	type->setIsTemp(false);	
 	auto result = _variables.find(varName);

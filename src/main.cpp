@@ -40,6 +40,10 @@ int main()
 		{
 			std::cout << e.what() << std::endl;
 		}
+		catch(TypeErrorException& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 
 		// Get input from user
 		std::cout << ">>> ";

@@ -5,14 +5,17 @@
 #include "../exceptions/IndentationException.h"
 #include "../exceptions/SyntaxException.h"
 #include "../exceptions/NameErrorException.h"
+#include "../exceptions/TypeErrorException.h"
 #include "../utils/TypeUtils.h"
 #include "../types/Integer.h"
 #include "../types/Boolean.h"
 #include "../types/String.h"
+#include "../types/List.h"
 #include <unordered_map>
 #include "../types/Void.h"
 #include <utility>
 #include <set>
+#include <algorithm>
 
 class Parser
 {

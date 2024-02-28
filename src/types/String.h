@@ -8,5 +8,5 @@ public:
 
 	virtual bool isPrintable() const override;
 	virtual std::string toString() const override;
-
+	virtual std::string getType() const override;
 };

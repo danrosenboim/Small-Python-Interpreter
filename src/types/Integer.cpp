@@ -12,3 +12,8 @@ std::string Integer::toString() const
 {
 	return std::to_string(_value);
 }
+
+std::string Integer::getType() const
+{
+	return "int";
+}

@@ -17,3 +17,8 @@ std::string String::toString() const
 	}
 	return output + "'";
 }
+
+std::string String::getType() const
+{
+	return "str";
+}

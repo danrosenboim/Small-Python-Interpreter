@@ -10,6 +10,7 @@ public:
 	
 	virtual bool isPrintable() const = 0;
 	virtual std::string toString() const = 0;
+	int getLength() const;
 protected:
 	std::vector<T> _value;
 };
@@ -18,4 +19,10 @@ template<typename T>
 Sequence<T>::Sequence(std::vector<T> seq, bool isTemp) : Type(isTemp)
 {
 	_value = seq;
+}
+
+template<typename T>
+int Sequence<T>::getLength() const
+{
+	return _value.size();
 }

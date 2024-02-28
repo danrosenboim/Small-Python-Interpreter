@@ -16,3 +16,8 @@ std::string Boolean::toString() const
 	}
 	return "False";
 }
+
+std::string Boolean::getType() const
+{
+	return "bool";
+}
